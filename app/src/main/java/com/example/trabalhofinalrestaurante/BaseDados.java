@@ -1,9 +1,12 @@
 package com.example.trabalhofinalrestaurante;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 public class BaseDados extends SQLiteOpenHelper {
     Context co;
@@ -252,15 +255,79 @@ public class BaseDados extends SQLiteOpenHelper {
         tabsc="insert into tipo_produto(ID_Tipo,Descricao) values (2,'Bebidas')";
         bd.execSQL(tabsc);
 
-        tabsc="insert into tipo_produto(ID_Tipo,Descricao) values (1,'Pratos de peixe')";
+        tabsc="insert into tipo_produto(ID_Tipo,Descricao) values (3,'Pratos de peixe')";
         bd.execSQL(tabsc);
 
-        tabsc="insert into tipo_produto(ID_Tipo,Descricao) values (1,'Pratos de carne')";
+        tabsc="insert into tipo_produto(ID_Tipo,Descricao) values (4,'Pratos de carne')";
         bd.execSQL(tabsc);
 
-        tabsc="insert into tipo_produto(ID_Tipo,Descricao) values (1,'Sobremesas')";
+        tabsc="insert into tipo_produto(ID_Tipo,Descricao) values (5,'Sobremesas')";
         bd.execSQL(tabsc);
 
     }
+    public void inserir_mesa(SQLiteDatabase bd)
+    {
+        tabsc="insert into Mesa(ID_Mesa,Localizacao,NumeroLugares,Disponivel) values (1,'Canto Sul, vista mar (Sala 1)',4,'aberta')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into Mesa(ID_Mesa,Localizacao,NumeroLugares,Disponivel) values (2,'Canto norte (sala 1)',2,'aberta')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into Mesa(ID_Mesa,Localizacao,NumeroLugares,Disponivel) values (3,'Canto sudeste, vista mar (sala 1)',6,'aberta')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into Mesa(ID_Mesa,Localizacao,NumeroLugares,Disponivel) values (4,'Centro esquerdo (sala 2)',12,'aberta')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into Mesa(ID_Mesa,Localizacao,NumeroLugares,Disponivel) values (5,'Centro direito (sala 2)',12,'aberta')";
+        bd.execSQL(tabsc);
+    }
+
+    public void inserir_produtos(SQLiteDatabase bd)
+    {
+        tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (1,1,'Tábua de presunto','Presunto Ibérico','Tábua 10 fatias de presunto. Aconselhável: 2 pessoas',7.89,'Risco de alergia: 1')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (2,2,'Fanta Laranja','FANTA','Fanta com sabor a laranja. 200 ml (lata)',1.70,'Risco de alergia: 2')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (3,3,'Salmão grelhado','IGLO','2 postas de salmão grelhado, com batata cozida e legumes a acompanhar. Aconselhável: 2 pessoas',19.99,'Risco de alergia: 0')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (4,4,'Francesinha frango','Moda Porto','Francesinha com fatia de frango, linguíça, ovo estralado, etc. Batata frita de acompanhamento',8.99,'Risco de alergia: 2')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (5,5,'Frutas variadas','Moda Casa','Frutas da época: Melão, morangos, laranja e pessego.',3.50,'Risco de alergia: 0')";
+        bd.execSQL(tabsc);
+    }
+
+    public ArrayList<String>  lista_tipo_produtos(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Tipo,Descricao from tipo_produto", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add(res.getString(res.getColumnIndex("Descricao")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String>  lista_produtos(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Produto, ID_Tipo,Nome,Marca, Descricao, Preco,Risco_Alergia from produtos", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("-- Nome Produto"+res.getString(res.getColumnIndex("Nome"))+ "\n--Descrição do produto :" +res.getString(res.getColumnIndex("Descricao")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
 
 }
