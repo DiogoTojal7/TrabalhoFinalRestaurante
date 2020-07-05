@@ -323,7 +323,7 @@ public class BaseDados extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
-            array_list.add("-- Nome Produto"+res.getString(res.getColumnIndex("Nome"))+ "\n--Descrição do produto :" +res.getString(res.getColumnIndex("Descricao")));
+            array_list.add("Nome: "+res.getString(res.getColumnIndex("Nome"))+ "\nMarca: " +res.getString(res.getColumnIndex("Marca"))+ "\nDescrição: " +res.getString(res.getColumnIndex("Descricao"))+ "\nPreço: " +res.getString(res.getColumnIndex("Preco"))+ "\nNível de alergia: " +res.getString(res.getColumnIndex("Risco_Alergia")));
             res.moveToNext();
         }
         return array_list;
