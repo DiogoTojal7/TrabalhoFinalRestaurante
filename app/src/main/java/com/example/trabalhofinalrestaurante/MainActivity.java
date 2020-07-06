@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,Consulta_TipoProdutos.class));
+                startActivity(new Intent(MainActivity.this,Escolha_Mesa.class));
             }
         });
     }
