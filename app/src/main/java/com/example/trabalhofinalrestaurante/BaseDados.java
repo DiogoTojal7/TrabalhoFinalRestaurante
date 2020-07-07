@@ -301,6 +301,28 @@ public class BaseDados extends SQLiteOpenHelper {
         bd.execSQL(tabsc);
     }
 
+    public void inserir_pessoas_REGISTO(SQLiteDatabase bd, String nome,String nif,String datanasc)
+    {
+        tabsc="insert into Clientes(Nome,Nif,Data_nasc) values('" + nome + "','"+nif+"','"+datanasc+"')";
+        bd.execSQL(tabsc);
+
+    }
+
+    // buscar valores
+
+    public String   selectIDCliente(SQLiteDatabase bd, String nome, String nif) {
+        String id="";
+        Cursor res =  bd.rawQuery( "select ID_Cliente from Clientes where Nome like'"+nome+"' and Nif like '"+nif+"'", null );
+        res.moveToFirst();
+        while(res.isAfterLast() == false){
+         id=(res.getString(res.getColumnIndex("ID_Cliente")));
+            res.moveToNext();
+        }
+        return id;
+    }
+
+
+    //buscar todos os dados
     public ArrayList<String>  lista_tipo_produtos(SQLiteDatabase bd) {
         ArrayList<String> array_list = new ArrayList<String>();
 
@@ -328,6 +350,23 @@ public class BaseDados extends SQLiteOpenHelper {
         }
         return array_list;
     }
+
+    public ArrayList<String>  lista_pessoas(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Cliente, Nome,Nif,Data_nasc from Clientes", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("ID: "+res.getString(res.getColumnIndex("ID_Cliente"))+ "\nNome: " +res.getString(res.getColumnIndex("Nome"))+ "\nNif: " +res.getString(res.getColumnIndex("Nif"))+ "\nData_nasc: " +res.getString(res.getColumnIndex("Data_nasc")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+
+
 
 
 }

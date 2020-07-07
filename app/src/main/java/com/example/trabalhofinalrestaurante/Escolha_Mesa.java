@@ -20,6 +20,13 @@ public class Escolha_Mesa extends AppCompatActivity {
                 startActivity(new Intent(Escolha_Mesa.this,registo_util.class));
             }
         });
+        Button btlogin= (Button) findViewById(R.id.buttonlogin);
+        btlogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Escolha_Mesa.this,Login.class));
+            }
+        });
     }
 
 }
