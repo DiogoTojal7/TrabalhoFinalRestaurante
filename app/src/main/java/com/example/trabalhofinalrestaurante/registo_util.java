@@ -21,7 +21,6 @@ public class registo_util extends AppCompatActivity {
         final EditText editnome=(EditText) findViewById(R.id.edittnome);
         final EditText editnif=(EditText) findViewById(R.id.editNIF);
         final EditText editdatanas=(EditText) findViewById(R.id.editdatanasc);
-        final TextView txtinfo=(TextView)findViewById(R.id.txtidutilizador);
         btregisto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,23 +33,17 @@ public class registo_util extends AppCompatActivity {
                 bd.inserir_pessoas_REGISTO(bd.dbw,editnome.getText().toString(),editnif.getText().toString(),editdatanas.getText().toString());
                 String x=bd.selectIDCliente(bd.dbr,editnome.getText().toString(),editnif.getText().toString());
                 int xint=Integer.parseInt(x);
-                txtinfo.setText(String.valueOf(xint));
                 editdatanas.setText("");
                 editnome.setText("");
                 editnif.setText("");
-
-                startActivity(new Intent(registo_util.this,Consulta_TipoProdutos.class));
+                Intent int1=new Intent(registo_util.this,Mesa_Util_Escolha.class);
+                int1.putExtra("IDCLIENTE",x);
+                startActivity(int1);
 
 
             }
         });
 
-        Button btconsulta=(Button) findViewById(R.id.btnconsultapessoas);
-        btconsulta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
     }
     public void opendialog()
     {

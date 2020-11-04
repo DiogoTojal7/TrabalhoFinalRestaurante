@@ -20,13 +20,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 BaseDados bd=new BaseDados(MainActivity.this);
                 bd.apaga_tabela_Clientes(bd.dbw);
+                bd.apaga_tabela_Mesa(bd.dbw);
                 bd.apaga_tabela_produtos(bd.dbw);
                 bd.apaga_tabela_tipo_produto(bd.dbw);
+                bd.apaga_tabela_Mesa_Clientes(bd.dbw);
+                bd.apaga_tabela_Produtos_Mesa_Cliente(bd.dbw);
+                bd.apaga_tabela_Pagamento(bd.dbw);
+                bd.Criar_tabela_Mesa_Clientes(bd.dbw);
                 bd.Criar_tabela_Clientes(bd.dbw);
                 bd.Criar_tabela_TipoProduto(bd.dbw);
+                bd.Criar_tabela_Mesa(bd.dbw);
                 bd.Criar_tabela_Produtos(bd.dbw);
+                bd.Criar_tabela_Produtos_Mesa_Cliente(bd.dbw);
+                bd.Criar_tabela_Pagamento(bd.dbw);
                 bd.inserir_tipo_produtos(bd.dbw);
                 bd.inserir_produtos(bd.dbw);
+                bd.inserir_mesa(bd.dbw);
             }
         });
 

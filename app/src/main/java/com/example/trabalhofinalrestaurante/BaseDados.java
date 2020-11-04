@@ -299,8 +299,15 @@ public class BaseDados extends SQLiteOpenHelper {
 
         tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (5,5,'Frutas variadas','Moda Casa','Frutas da época: Melão, morangos, laranja e pessego.',3.50,'Risco de alergia: 0')";
         bd.execSQL(tabsc);
+
+        tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (6,1,'Tábua de petiscos','Moda casa','Tábua com vários petiscos: moelas, salada de bacalhau, ameijoa com cebola, camarao frito. Aconselhável: 2 pessoas',16,'Risco de alergia: 1')";
+        bd.execSQL(tabsc);
+
+        tabsc="insert into produtos(ID_Produto,ID_Tipo,Nome,Marca,Descricao,Preco,Risco_Alergia) values (7,1,'Cogumelos salteados','Moda casa','Cogumelos salteados com caju. Aconselhável: 2 pessoas',4.89,'Risco de alergia: 4')";
+        bd.execSQL(tabsc);
     }
 
+    //INSERIR PESSOAS (REGISTO)
     public void inserir_pessoas_REGISTO(SQLiteDatabase bd, String nome,String nif,String datanasc)
     {
         tabsc="insert into Clientes(Nome,Nif,Data_nasc) values('" + nome + "','"+nif+"','"+datanasc+"')";
@@ -308,7 +315,38 @@ public class BaseDados extends SQLiteOpenHelper {
 
     }
 
+    //Inserir Mesa_Clientes
+    public void inserir_Mesa_Cliente(SQLiteDatabase bd, int idcliente,int idmesa)
+    {
+        tabsc="insert into Mesa_Clientes(ID_Cliente,ID_Mesa) values("+idcliente+","+idmesa+")";
+        bd.execSQL(tabsc);
+    }
+
+    //INSERIR PEDIDO (JUNÇÃO DA MESA_CLIENTE COM OS PRODUTOS)
+    public void inserir_produtos_mesa(SQLiteDatabase bd,int id_mesacliente,int idproduto,int quantidade)
+    {
+        tabsc="insert into Produtos_Mesa_Cliente (ID_MESA_CLIENTE,ID_PRODUTO,Quantidade) values("+id_mesacliente+","+idproduto+","+quantidade+")";
+        bd.execSQL(tabsc);
+    }
+    public void inserir_pagamento(SQLiteDatabase bd, int idmesacliente,String pagamento)
+    {
+        tabsc="insert into Pagamento (ID_MESA_CLIENTE,Tipo_Pagamento) values("+idmesacliente+",'"+pagamento+"')";
+        bd.execSQL(tabsc);
+    }
+
     // buscar valores
+
+    public String selectIDMesa_Cliente(SQLiteDatabase bd, int idcliente,int idmesa)
+    {
+        String id="";
+        Cursor res=bd.rawQuery("Select IDMesa_Cliente from Mesa_Clientes where ID_Cliente="+idcliente+" and ID_Mesa="+idmesa,null);
+        res.moveToFirst();
+        while(res.isAfterLast() == false){
+            id=(res.getString(res.getColumnIndex("IDMesa_Cliente")));
+            res.moveToNext();
+        }
+        return id;
+    }
 
     public String   selectIDCliente(SQLiteDatabase bd, String nome, String nif) {
         String id="";
@@ -321,8 +359,62 @@ public class BaseDados extends SQLiteOpenHelper {
         return id;
     }
 
+    public String   selecttotalPagamento(SQLiteDatabase bd, int id_mesacliente) {
+        String total="";
+        Cursor res =  bd.rawQuery( "Select sum(Quantidade*preco)  as total from Produtos_Mesa_Cliente join produtos on Produtos_Mesa_Cliente.ID_PRODUTO=produtos.ID_Produto WHERE ID_MESA_CLIENTE="+id_mesacliente, null );
+        res.moveToFirst();
+        while(res.isAfterLast() == false){
+            total=(res.getString(res.getColumnIndex("total")));
+            res.moveToNext();
+        }
+        return total;
+    }
+
+
+    public ArrayList<String>  Lista_Mesa_ABERTAS(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Mesa,Localizacao, NumeroLugares, Disponivel from Mesa", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Numero da mesa: "+ res.getString(res.getColumnIndex("ID_Mesa"))+"\nLocalização: "+ res.getString(res.getColumnIndex("Localizacao"))+ "\nNúmero Lugares: "+res.getString(res.getColumnIndex("NumeroLugares")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
 
     //buscar todos os dados
+
+    public ArrayList<String>  lista_Produtos_Mesa_Cliente (SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_PEDIDO,ID_MESA_CLIENTE,ID_PRODUTO,Quantidade from Produtos_Mesa_Cliente ", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("ID Pedido: "+res.getString(res.getColumnIndex("ID_PEDIDO"))+"\nID Mesa_Cliente: "+res.getString(res.getColumnIndex("ID_MESA_CLIENTE"))+ "\nID Produto: " +res.getString(res.getColumnIndex("ID_PRODUTO"))+ "\nQuantidade: " +res.getString(res.getColumnIndex("Quantidade")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String>  lista_mesa_clientes(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select IDMesa_Cliente,ID_Cliente,ID_Mesa from Mesa_Clientes", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("IDMesa_Cliente: "+res.getString(res.getColumnIndex("IDMesa_Cliente"))+"\nID_CLIENTE: "+res.getString(res.getColumnIndex("ID_Cliente"))+ "\nID_MESA: " +res.getString(res.getColumnIndex("ID_Mesa")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
     public ArrayList<String>  lista_tipo_produtos(SQLiteDatabase bd) {
         ArrayList<String> array_list = new ArrayList<String>();
 
@@ -364,7 +456,100 @@ public class BaseDados extends SQLiteOpenHelper {
         }
         return array_list;
     }
+    public ArrayList<String>  lista_entradas(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
 
+
+        Cursor res =  bd.rawQuery( "select ID_Produto, Nome,Marca,Descricao,Preco, Risco_Alergia from produtos where ID_Tipo=1", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Número entrada: "+res.getString(res.getColumnIndex("ID_Produto"))+ "\nNome: " +res.getString(res.getColumnIndex("Nome"))+ "\nMarca: " +res.getString(res.getColumnIndex("Marca"))+ "\nDescrição: " +res.getString(res.getColumnIndex("Descricao"))+ "\nPreço: " +res.getString(res.getColumnIndex("Preco"))+ "\nRisco de Alergia: " +res.getString(res.getColumnIndex("Risco_Alergia")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String>  lista_bebidas(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Produto, Nome,Marca,Descricao,Preco, Risco_Alergia from produtos where ID_Tipo=2", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Número bebida: "+res.getString(res.getColumnIndex("ID_Produto"))+ "\nNome: " +res.getString(res.getColumnIndex("Nome"))+ "\nMarca: " +res.getString(res.getColumnIndex("Marca"))+ "\nDescrição: " +res.getString(res.getColumnIndex("Descricao"))+ "\nPreço: " +res.getString(res.getColumnIndex("Preco"))+ "\nRisco de Alergia: " +res.getString(res.getColumnIndex("Risco_Alergia")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+    public ArrayList<String>  lista_carnes(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Produto, Nome,Marca,Descricao,Preco, Risco_Alergia from produtos where ID_Tipo=4", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Número Prato Carne: "+res.getString(res.getColumnIndex("ID_Produto"))+ "\nNome: " +res.getString(res.getColumnIndex("Nome"))+ "\nMarca: " +res.getString(res.getColumnIndex("Marca"))+ "\nDescrição: " +res.getString(res.getColumnIndex("Descricao"))+ "\nPreço: " +res.getString(res.getColumnIndex("Preco"))+ "\nRisco de Alergia: " +res.getString(res.getColumnIndex("Risco_Alergia")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+    public ArrayList<String>  lista_peixes(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Produto, Nome,Marca,Descricao,Preco, Risco_Alergia from produtos where ID_Tipo=3", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Número Prato Peixe: "+res.getString(res.getColumnIndex("ID_Produto"))+ "\nNome: " +res.getString(res.getColumnIndex("Nome"))+ "\nMarca: " +res.getString(res.getColumnIndex("Marca"))+ "\nDescrição: " +res.getString(res.getColumnIndex("Descricao"))+ "\nPreço: " +res.getString(res.getColumnIndex("Preco"))+ "\nRisco de Alergia: " +res.getString(res.getColumnIndex("Risco_Alergia")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+    public ArrayList<String>  lista_sobremesas(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Produto, Nome,Marca,Descricao,Preco, Risco_Alergia from produtos where ID_Tipo=5", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Número Sobremesa: "+res.getString(res.getColumnIndex("ID_Produto"))+ "\nNome: " +res.getString(res.getColumnIndex("Nome"))+ "\nMarca: " +res.getString(res.getColumnIndex("Marca"))+ "\nDescrição: " +res.getString(res.getColumnIndex("Descricao"))+ "\nPreço: " +res.getString(res.getColumnIndex("Preco"))+ "\nRisco de Alergia: " +res.getString(res.getColumnIndex("Risco_Alergia")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String>  lista_pagamentos(SQLiteDatabase bd,int id_mesacliente) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_PEDIDO, Nome,Quantidade,Preco,Quantidade*Preco as Total from Produtos_Mesa_Cliente join produtos on Produtos_Mesa_Cliente.ID_PRODUTO=produtos.ID_Produto where ID_MESA_CLIENTE="+id_mesacliente, null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Nome produto: "+res.getString(res.getColumnIndex("Nome"))+ "\nQuantidade: " +res.getString(res.getColumnIndex("Quantidade"))+ "\nPreco: " +res.getString(res.getColumnIndex("Preco"))+ "\nTotal: " +res.getString(res.getColumnIndex("Total")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
+
+    public ArrayList<String>  lista_tablepagamentos(SQLiteDatabase bd) {
+        ArrayList<String> array_list = new ArrayList<String>();
+
+
+        Cursor res =  bd.rawQuery( "select ID_Pagamento, ID_MESA_CLIENTE,Tipo_Pagamento from Pagamento", null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            array_list.add("Número Pagamento: "+res.getString(res.getColumnIndex("ID_Pagamento"))+ "\nID_MesaCliente: " +res.getString(res.getColumnIndex("ID_MESA_CLIENTE"))+ "\nTipo_Pagamento: " +res.getString(res.getColumnIndex("Tipo_Pagamento")));
+            res.moveToNext();
+        }
+        return array_list;
+    }
 
 
 
